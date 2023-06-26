@@ -16,10 +16,14 @@ public static class GeneratePdf
         ILogger log)
     {
         log.LogInformation("GeneratePdf function processed a request.");
+        // Set pixel multiple variable which will be used to set page.Width and Height
+        //For some reason 0.75 is the magic number that gets rid of the generated whitespace
+        double pixelMultiple = 0.75;
+        
         // Read the base64 image data from the request body
         string inputString = new StreamReader(req.Body).ReadToEnd();
         
-        log.LogInformation(inputString);
+        //log.LogInformation(inputString);
 
          string imageData = Util.Utils.RemoveDataTag(inputString);
 
@@ -30,8 +34,9 @@ public static class GeneratePdf
         PdfDocument document = new PdfDocument();
         XImage image = XImage.FromStream(() => new MemoryStream(imageBytes));
         PdfPage page = document.AddPage();
-        page.Width = image.PixelWidth;
-        page.Height = image.PixelHeight;
+        page.Width = image.PixelWidth*pixelMultiple;
+        page.Height = image.PixelHeight*pixelMultiple;
+
         XGraphics gfx = XGraphics.FromPdfPage(page);
         gfx.DrawImage(image, 0, 0);
 
@@ -45,4 +50,3 @@ public static class GeneratePdf
     }
 
 };
-
