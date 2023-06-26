@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
+using  Util;
 
 public static class GeneratePdf
 {
@@ -15,11 +16,12 @@ public static class GeneratePdf
         ILogger log)
     {
         log.LogInformation("GeneratePdf function processed a request.");
-
         // Read the base64 image data from the request body
-        string imageData = new StreamReader(req.Body).ReadToEnd();
+        string inputString = new StreamReader(req.Body).ReadToEnd();
         
-        log.LogInformation(imageData);
+        log.LogInformation(inputString);
+
+         string imageData = Util.Utils.RemoveDataTag(inputString);
 
         // Convert the base64 image data to bytes
         byte[] imageBytes = System.Convert.FromBase64String(imageData);
@@ -41,4 +43,6 @@ public static class GeneratePdf
         // Return the PDF as the response
         return new FileStreamResult(stream, "application/pdf");
     }
-}
+
+};
+
